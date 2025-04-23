@@ -1,10 +1,13 @@
-type System =
+export type RefineConfig = { schema: RegExp; message: string };
+
+export type System =
   | "universal" // Generic placeholder, might represent common subset rules
   // macOS
-  | "masos"
+  | "macos"
   | "apfs"
   | "hfs+"
   // Linux
+  | "linux" // Added generic Linux type
   | "ext2"
   | "ext3"
   | "ext4"
