@@ -15,10 +15,13 @@ export const registry: Partial<Record<System, RegExpConfig>> = {
       `^(?!${windowsReserved.source})[^${windowsChars.source.slice(
         1,
         -1
-      )}${linuxChars.source.slice(1, -1)}]+$`
+      )}${linuxChars.source.slice(1, -1)}${macChars.source.slice(
+        1,
+        -1
+      )}]+(?<![. ])$`
     ),
     message:
-      "Invalid universal filename: contains illegal characters or is a reserved name.",
+      "Invalid universal filename: contains illegal characters, is a reserved name, or ends with '.' or ' '.",
   },
 
   // --- macOS ---
@@ -29,7 +32,6 @@ export const registry: Partial<Record<System, RegExpConfig>> = {
 
   // --- Linux ---
   linux: {
-    // Added generic Linux entry
     schema: new RegExp(`^[^${linuxChars.source.slice(1, -1)}]+$`),
     message: "Invalid Linux filename: cannot contain null or '/' characters.",
   },
@@ -37,13 +39,10 @@ export const registry: Partial<Record<System, RegExpConfig>> = {
   // --- Windows ---
   windows: {
     schema: new RegExp(
-      `^(?!${windowsReserved.source})([^${windowsChars.source.slice(
+      `^(?!${windowsReserved.source})[^${windowsChars.source.slice(
         1,
         -1
-      )}]*[^${windowsChars.source.slice(1, -1)}${trailingChars.source.slice(
-        1,
-        -1
-      )}])$`
+      )}]+(?<![. ])$`
     ),
     message:
       "Invalid Windows filename: contains illegal characters (< > : \" / \\ | ? *), is a reserved name, or ends with '.' or ' '.",
