@@ -1,7 +1,7 @@
 import js from "@eslint/js";
 import globals from "globals";
 import tseslint from "typescript-eslint";
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
   {
@@ -14,4 +14,11 @@ export default defineConfig([
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
   },
   tseslint.configs.recommended,
+  globalIgnores([
+    "node_modules/*",
+    "dist/*",
+    "build/*",
+    "coverage/*",
+    "src/playground/*",
+  ]),
 ]);

@@ -1,4 +1,4 @@
-export type RefineConfig = { schema: RegExp; message: string };
+export type RegExpConfig = { schema: RegExp; message: string };
 
 export type System =
   | "universal" // Generic placeholder, might represent common subset rules
