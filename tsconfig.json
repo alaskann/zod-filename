@@ -11,6 +11,6 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["index.ts", "types.ts"],
-  "exclude": ["node_modules", "dist", "playground"]
+  "include": ["src/index.ts", "src/types.ts", "playground/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

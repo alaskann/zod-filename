@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { System } from "./types";
 import { registry } from "./regex";
 
 const baseSchema = z.string();

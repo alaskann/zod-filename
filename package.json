@@ -10,12 +10,12 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "vitest",
+    "test": "vitest run",
     "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-username/zod-filename.git"
+    "url": "git+https://github.com/alaskann/zod-filename.git"
   },
   "keywords": [
     "zod",
@@ -26,7 +26,7 @@
     "macos",
     "linux"
   ],
-  "author": "Your Name <your.email@example.com>",
+  "author": "Jason Procka",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/your-username/zod-filename/issues"
@@ -39,6 +39,6 @@
     "@types/node": "^20.14.10",
     "tsup": "^8.4.0",
     "typescript": "^5.5.3",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.1"
   }
 }

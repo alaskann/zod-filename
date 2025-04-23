@@ -1,4 +1,4 @@
-import { RefineConfig, System } from "./types";
+import { RegExpConfig, System } from "./types";
 
 // Common Regex Parts
 const windowsReserved = /^(?:CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\..*)?$/i;
@@ -8,7 +8,7 @@ const linuxChars = /[\0/]/;
 const macChars = /[:/]/;
 const isoChars = /^[A-Z0-9_.-]+$/i; // Simplified ISO 9660 (Level 1/Joliet)
 
-export const registry: Partial<Record<System, RefineConfig>> = {
+export const registry: Partial<Record<System, RegExpConfig>> = {
   // --- Universal / Common ---
   universal: {
     schema: new RegExp(
