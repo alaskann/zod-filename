@@ -11,6 +11,110 @@ type TestResult = {
   accuracy: string;
   fpRate: string;
   fnRate: string;
+  falsePositiveCases: string[];
+  falseNegativeCases: string[];
+};
+
+const testData: Partial<
+  Record<keyof typeof registry, { valid: string[]; invalid: string[] }>
+> = {
+  universal: {
+    valid: [
+      "file.txt",
+      "my_document.docx",
+      "notes_2024-07-01.md",
+      "image_001.png",
+      "README",
+      "data123",
+      "file.name.with.dots",
+      "file-name_with-mixed.chars",
+    ],
+    invalid: [
+      "CON", // Windows reserved
+      "file?.txt", // Windows illegal char
+      "file/name", // Linux/macOS illegal char
+      "file:name", // macOS illegal char
+      "file\0name", // Null byte
+      "file<name>", // Windows illegal char
+      "file|name", // Windows illegal char
+      "file.txt ", // Windows trailing space
+      "file.txt.", // Windows trailing dot
+      "AUX", // Windows reserved
+      "NUL", // Windows reserved
+      "LPT1", // Windows reserved
+      "PRN", // Windows reserved
+      "file/with/slash",
+    ],
+  },
+  macos: {
+    valid: [
+      "file.txt",
+      "my_document.docx",
+      "notes_2024-07-01.md",
+      "README",
+      "file-name_with-mixed.chars",
+    ],
+    invalid: [
+      "file/name", // Contains slash
+      "file:name", // Contains colon
+      "my:file", // Contains colon
+      "folder/file", // Contains slash
+      ":", // Just a colon
+      "/", // Just a slash
+      "file/:name", // Both
+      "file/name:bad",
+    ],
+  },
+  linux: {
+    valid: [
+      "file.txt",
+      "my_document.docx",
+      "notes_2024-07-01.md",
+      "README",
+      "file-name_with-mixed.chars",
+    ],
+    invalid: [
+      "file/name", // Contains slash
+      "file\0name", // Contains null byte
+      "/etc/passwd", // Starts with slash
+      "folder/file", // Contains slash
+      "\0", // Just null byte
+      "file/\0name", // Both
+    ],
+  },
+  windows: {
+    valid: [
+      "file.txt",
+      "my_document.docx",
+      "notes_2024-07-01.md",
+      "README",
+      "file-name_with-mixed.chars",
+      "data123",
+      "file_name",
+    ],
+    invalid: [
+      "CON", // Reserved
+      "PRN", // Reserved
+      "AUX", // Reserved
+      "NUL", // Reserved
+      "COM1", // Reserved
+      "LPT1", // Reserved
+      "file?.txt", // Illegal char
+      "file<name>", // Illegal char
+      "file|name", // Illegal char
+      "file.txt ", // Trailing space
+      "file.txt.", // Trailing dot
+      "file/name", // Slash
+      "file:name", // Colon
+      "file*name", // Asterisk
+      'file"name', // Double quote
+      "file\\name", // Backslash
+      "file>name", // Greater than
+      "file<name", // Less than
+      "file.txt\t", // Control char (tab)
+      "file\nname", // Control char (newline)
+    ],
+  },
 };
 
 function runValidationTest(
@@ -22,6 +126,8 @@ function runValidationTest(
   let correct = 0;
   let falsePositives = 0; // Invalid classified as valid
   let falseNegatives = 0; // Valid classified as invalid
+  const falsePositiveCases: string[] = [];
+  const falseNegativeCases: string[] = [];
 
   // Test valid filenames
   validFilenames.forEach((filename) => {
@@ -30,6 +136,7 @@ function runValidationTest(
       correct++;
     } else {
       falseNegatives++;
+      falseNegativeCases.push(filename);
       console.warn(
         `[${String(
           system
@@ -47,6 +154,7 @@ function runValidationTest(
       correct++;
     } else {
       falsePositives++;
+      falsePositiveCases.push(filename);
       console.warn(
         `[${String(
           system
@@ -72,68 +180,10 @@ function runValidationTest(
     accuracy,
     fpRate,
     fnRate,
+    falsePositiveCases,
+    falseNegativeCases,
   };
 }
-
-// --- Test Data --- (Add more comprehensive examples)
-const testData: Partial<
-  Record<keyof typeof registry, { valid: string[]; invalid: string[] }>
-> = {
-  universal: {
-    valid: ["file.txt", "document_1", "image-1.jpg", "archive.zip", "a"],
-    invalid: [
-      "file/name", // Contains /
-      "file:name", // Contains :
-      "file*name", // Contains *
-      "file?name", // Contains ?
-      "file<name", // Contains <
-      "file>name", // Contains >
-      "file|name", // Contains |
-      '"file"', // Contains "
-      "COM1", // Reserved name
-      "file.", // Ends with .
-      "file ", // Ends with space
-      "", // Empty
-      "\0null", // Contains null
-    ],
-  },
-  macos: {
-    valid: ["file.txt", "document 1", "image~1.png", "archive.tar.gz", "a"],
-    invalid: [
-      "file/name", // Contains /
-      "file:name", // Contains :
-      "", // Empty
-    ],
-  },
-  linux: {
-    valid: ["file.txt", "document.1", ".hiddenfile", "a_b-c=d+e", "a"],
-    invalid: [
-      "file/name", // Contains /
-      "\0null", // Contains null
-      "", // Empty
-    ],
-  },
-  windows: {
-    valid: ["file.txt", "document 1", "image_1.jpeg", "archive.7z", "a"],
-    invalid: [
-      "file/name", // Contains /
-      "file:name", // Contains :
-      "file*name", // Contains *
-      "file?name", // Contains ?
-      "file<name", // Contains <
-      "file>name", // Contains >
-      "file|name", // Contains |
-      '"file"', // Contains "
-      "COM1", // Reserved name
-      "LPT2.txt", // Reserved name
-      "file.", // Ends with .
-      "file ", // Ends with space
-      "", // Empty
-      "nul", // Reserved name
-      "con.txt", // Reserved name
-    ],
-  },
-};
 
 // --- Tests ---
 describe("zfn.filename validation", () => {
@@ -152,9 +202,15 @@ describe("zfn.filename validation", () => {
       console.log(
         `  False Positives: ${results.falsePositives} (${results.fpRate} of invalid)`
       );
+      if (results.falsePositiveCases.length > 0) {
+        console.log(`    False Positive Cases:`, results.falsePositiveCases);
+      }
       console.log(
         `  False Negatives: ${results.falseNegatives} (${results.fnRate} of valid)`
       );
+      if (results.falseNegativeCases.length > 0) {
+        console.log(`    False Negative Cases:`, results.falseNegativeCases);
+      }
 
       // Assertions for the test runner
       expect(

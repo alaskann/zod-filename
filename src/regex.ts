@@ -49,23 +49,3 @@ export const registry: Partial<Record<System, RegExpConfig>> = {
       "Invalid Windows filename: contains illegal characters (< > : \" / \\ | ? *), is a reserved name, or ends with '.' or ' '.",
   },
 };
-
-// Helper function to validate the complex Windows/FAT regex logic
-function isValidWindowsLike(filename: string): boolean {
-  if (windowsReserved.test(filename)) return false;
-  if (windowsChars.test(filename)) return false;
-  if (trailingChars.test(filename)) return false;
-  return filename.length > 0; // Ensure non-empty
-}
-
-// Refine Windows/FAT schemas using the helper function for clarity and robustness
-["windows", "ntfs", "fat32", "exfat", "refs", "fat16", "fat12"].forEach(
-  (sys) => {
-    const key = sys as System;
-    if (registry[key]) {
-      registry[key]!.schema = {
-        test: isValidWindowsLike,
-      } as RegExp; // Trick TypeScript, Zod refine expects RegExp | function
-    }
-  }
-);
