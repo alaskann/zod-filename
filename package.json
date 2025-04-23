@@ -1,7 +1,7 @@
 {
   "name": "zod-filename",
   "version": "1.0.0",
-  "description": "Zod validators for filesystem filenames across different operating systems.",
+  "description": "Zod validator for filenames",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -11,7 +11,9 @@
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -29,16 +31,25 @@
   "author": "Jason Procka",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/your-username/zod-filename/issues"
+    "url": "https://github.com/alaskann/zod-filename/issues"
   },
-  "homepage": "https://github.com/your-username/zod-filename#readme",
+  "homepage": "https://github.com/alaskann/zod-filename#readme",
   "dependencies": {
     "zod": "^3.24.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.25.1",
     "@types/node": "^20.14.10",
+    "@typescript-eslint/eslint-plugin": "^8.31.0",
+    "@typescript-eslint/parser": "^8.31.0",
+    "eslint": "^9.25.1",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-prettier": "^5.2.6",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.3",
     "tsup": "^8.4.0",
     "typescript": "^5.5.3",
+    "typescript-eslint": "^8.31.0",
     "vitest": "^1.6.1"
   }
 }
